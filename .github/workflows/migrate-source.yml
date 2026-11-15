@@ -1,0 +1,48 @@
+
+name: Migrate Android Source
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ZIP="ParticleLifeWallpaper_AndroidStudio_BioAtom.zip"
+          mkdir -p /tmp/android-source
+          unzip -q "$ZIP" -d /tmp/android-source
+
+          SETTINGS=$(find /tmp/android-source -type f \
+            \( -name settings.gradle -o -name settings.gradle.kts \) \
+            -print -quit)
+
+          if [ -z "$SETTINGS" ]; then
+            echo "Android project not found"
+            exit 1
+          fi
+
+          ROOT=$(dirname "$SETTINGS")
+          cp -a "$ROOT"/. ./
+
+          test -d app
+          test -f settings.gradle -o -f settings.gradle.kts
+
+      - name: Commit source files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          git commit -m "Extract Android source from ZIP"
+          git push
