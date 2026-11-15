@@ -30,7 +30,7 @@ jobs:
       - name: Extract Android project
         run: |
           mkdir -p project
-          unzip -q ParticleLifeWallpaper_AndroidStudio.zip -d project
+          unzip -q ParticleLifeWallpaper_AndroidStudio_BioAtom.zip -d project
           find project -type f | head -40
 
       - name: Build APK
