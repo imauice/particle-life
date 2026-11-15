@@ -1,14 +1,17 @@
-# Particle Life — Bond Lab Live Wallpaper
+# Particle Life — Bio-Atom (CHNOPS)
 
-Native Android Live Wallpaper using `WallpaperService` and Canvas. Reimplements the original Bond Lab particle/bond physics (not a WebView). No network permissions.
+Android Live Wallpaper based on the existing Bond Lab project.
+
+## Model
+
+- Six element categories: C, H, O, N, P, S, with approximate atomic masses 12.01, 1.008, 16.00, 14.01, 30.97, 32.06.
+- Simplified common covalent valence caps: C=4, H=1, O=2, N=3, P=3, S=2. Real valences and bonding depend on chemical context.
+- Visually scaled mass-dependent inertia, short-range repulsion, spring-like bonds, stochastic formation and breakage.
+- These rules are **illustrative**, not a validated molecular dynamics simulation. No quantum mechanics, electron orbitals, charge states, reaction pathways or realistic time/energy scales.
+- Default 420 atoms, 30 FPS. Tap wallpaper to add atoms.
 
 ## Build
-1. Open this folder in Android Studio (JDK 17, Android SDK 35).
-2. Let Gradle sync (Android Gradle Plugin 8.7.3).
-3. Build > Build Bundle(s) / APK(s) > Build APK(s).
-4. Install `app/build/outputs/apk/debug/app-debug.apk` on your phone.
-5. Launch **Particle Life Bond Lab**, adjust settings, tap **Set Live Wallpaper**, preview and apply.
 
-Settings: particles (100–450), bond probability, bond strength, random motion, FPS 10–60. Touch wallpaper to add particles. Stops updating when hidden.
+Unzip and run Gradle `assembleDebug` using Android SDK 35 and Java 17, or upload this ZIP under the exact filename `ParticleLifeWallpaper_AndroidStudio.zip` to the existing GitHub Actions workflow.
 
-Note: This is a source project, not a prebuilt APK. Internet access may be needed on the build computer for Gradle dependencies. The simulation is a stylized model, not physical molecular dynamics.
+The applicationId remains `com.particlelife.wallpaper` so it can replace the previous app if signed with the same key. GitHub Actions debug signing keys may differ between runs, so Android may require uninstalling the old app before installing the new one.
