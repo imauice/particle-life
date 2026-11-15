@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'ParticleLifeWallpaper_AndroidStudio.zip'
+      - 'ParticleLifeWallpaper_AndroidStudio_BioAtom.zip'
       - '.github/workflows/build.yml'
 
 jobs:
