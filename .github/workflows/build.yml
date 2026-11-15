@@ -1,65 +1,48 @@
 
-name: Build Android APK
+name: Migrate Android Source
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'ParticleLifeWallpaper_AndroidStudio_BioAtom.zip'
-      - '.github/workflows/build.yml'
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  migrate:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
-
       - name: Extract Android project
-        run: |
-          mkdir -p project
-          unzip -q ParticleLifeWallpaper_AndroidStudio_BioAtom.zip -d project
-          find project -type f | head -40
-
-      - name: Build APK
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
-          SETTINGS=$(find project -type f \
+          ZIP="ParticleLifeWallpaper_AndroidStudio_BioAtom.zip"
+          mkdir -p /tmp/android-source
+          unzip -q "$ZIP" -d /tmp/android-source
+
+          SETTINGS=$(find /tmp/android-source -type f \
             \( -name settings.gradle -o -name settings.gradle.kts \) \
             -print -quit)
 
           if [ -z "$SETTINGS" ]; then
-            echo "ERROR: Android project not found"
+            echo "Android project not found"
             exit 1
           fi
 
-          PROJECT_DIR=$(dirname "$SETTINGS")
-          cd "$PROJECT_DIR"
+          ROOT=$(dirname "$SETTINGS")
+          cp -a "$ROOT"/. ./
 
-          if [ -f gradlew ]; then
-            chmod +x gradlew
-            ./gradlew assembleDebug --no-daemon
-          else
-            gradle assembleDebug --no-daemon
-          fi
+          test -d app
+          test -f settings.gradle -o -f settings.gradle.kts
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ParticleLifeWallpaper-APK
-          path: project/**/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+      - name: Commit source files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          git commit -m "Extract Android source from ZIP"
+          git push
